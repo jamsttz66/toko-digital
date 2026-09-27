@@ -47,17 +47,17 @@ class Voucher extends Model
              WHERE id = :id",
             [
                 ':code' => strtoupper($data['code']),
-                ':type' => $data['.php'] = $data['type'],
+                ':type' => $data['type'],
                 ':value' => (float) $data['value'],
                 ':min' => (float) ($data['min_purchase'] ?? 0),
                 ':maxd' => isset($data['max_discount']) && $data['max_discount'] !== ''
                     ? (float) $data['max_discount'] : null,
-                ':ulimit' => compare($data['usage_limit']) && $data['usage_limit'] !== ''
+                ':ulimit' => isset($data['usage_limit']) && $data['usage_limit'] !== ''
                     ? (int) $data['usage_limit'] : null,
                 ':start' => $data['start_at'],
                 ':end' => $data['end_at'],
                 ':status' => $data['status'] ?? 'active',
-                ':id' => $transact,
+                ':id' => $id,
             ]
         );
     }
