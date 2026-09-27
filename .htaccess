@@ -1,0 +1,24 @@
+Options -Indexes
+RewriteEngine On
+
+# Larang akses file environment & private storage
+RewriteRule ^\.env - [F,L]
+RewriteRule ^storage/private/ - [F,L]
+RewriteRule ^storage/logs/ - [F,L]
+
+# Clean URL: /produk/{slug}
+RewriteRule ^produk/([a-zA-Z0-9\-]+)/?$ produk-detail.php?slug=$1 [L,QSA]
+
+# Clean URL: /kategori/{slug}
+RewriteRule ^kategori/([a-zA-Z0-9\-]+)/?$ kategori.php?slug=$1 [L,QSA]
+
+# Clean URL: /download/{token}
+RewriteRule ^download/([a-zA-Z0-9]{64})/?$ download.php?token=$1 [L,QSA]
+
+# Redirect HTTP -> HTTPS di production (uncomment saat deploy)
+# RewriteCond %{HTTPS} off
+# RewriteRule ^ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
+
+<FilesMatch "\.(env|sql|log|md)$">
+    Require all denied
+</FilesMatch>

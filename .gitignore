@@ -1,0 +1,36 @@
+# Environment
+.env
+.env.local
+.env.production
+
+# Database
+*.sqlite
+*.sqlite3
+storage/database.sqlite
+storage/*.db
+
+# Digital product files (PRIVATE - never commit)
+storage/private/products/*
+!storage/private/products/.gitkeep
+
+# Logs
+storage/logs/*
+!storage/logs/.gitkeep
+
+# Uploads
+uploads/*
+!uploads/.gitkeep
+
+# Dependencies
+vendor/
+
+# OS / Editor
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Backup
+*.sql.bak
