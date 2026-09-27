@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="800" height="600" viewBox="0 0 800 600">
+  <rect width="800" height="600" fill="#fafaf8"/>
+  <rect x="1" y="1" width="798" height="598" fill="none" stroke="#e5e5e0" stroke-width="2"/>
+  <g stroke="#d4d4cc" stroke-width="1.5" fill="none">
+    <rect x="280" y="180" width="240" height="160" rx="6"/>
+    <path d="M310 260 h180 M310 290 h140"/>
+  </g>
+  <g fill="#6b7280" font-family="Helvetica, Arial, sans-serif" font-size="20" text-anchor="middle">
+    <text x="400" y="250">Pratinjau Produk</text>
+    <text x="400" y="320" font-size="15" fill="#9aa0a6">Gambar akan tampil di sini</text>
+  </g>
+</svg>
