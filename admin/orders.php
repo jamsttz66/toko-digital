@@ -76,7 +76,7 @@ $statusLabels = [
                                    class="btn btn-outline-ink btn-sm">Detail</a>
                             </td>
                         </tr>
-.php<?php endforeach; ?>
+                    <?php endforeach; ?>
                 </tbody>
             </table>
         </div>

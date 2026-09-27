@@ -5,11 +5,11 @@
  *
  * Variabel: $pageTitle, $activeMenu
  */
-require_once __DIR__ . '/../includes/functions.php';
-require_once __DIR__ . '/../includes/autoload.php';
-require_once __DIR__ . '/../includes/session.php';
-require_once __DIR__ . '/../includes/auth.php';
-require_once __DIR__ . '/../includes/admin-auth.php';
+require_once __DIR__ . '/../../includes/functions.php';
+require_once __DIR__ . '/../../includes/autoload.php';
+require_once __DIR__ . '/../../includes/session.php';
+require_once __DIR__ . '/../../includes/auth.php';
+require_once __DIR__ . '/../../includes/admin-auth.php';
 
 require_admin();
 
@@ -17,7 +17,7 @@ $pageTitle = $pageTitle ?? 'Admin';
 $activeMenu = $activeMenu ?? '';
 
 $menu = [
-    'dashboard'  => ['Dashboard', 'index.php'],
+    'dashboard'  => ['Dashboard', 'dashboard.php'],
     'products'   => ['Produk', 'products.php'],
     'categories' => ['Kategori', 'categories.php'],
     'orders'     => ['Pesanan', 'orders.php'],
