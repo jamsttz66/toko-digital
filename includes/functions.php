@@ -6,6 +6,7 @@
 
 require_once __DIR__ . '/../config/env.php';
 require_once __DIR__ . '/../config/database.php';
+require_once __DIR__ . '/session.php';
 
 /**
  * Escape output untuk mencegah XSS.
@@ -76,7 +77,7 @@ function csrf_token(): string
     if (empty($_SESSION['csrf_token'])) {
         $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
     }
-    return $_SESSION['web_token'];
+    return $_SESSION['csrf_token'];
 }
 
 /**
@@ -266,4 +267,15 @@ function audit_log(string $action, string $entityType, ?int $entityId, string $d
             ':ua' => user_agent(),
         ]
     );
+}
+
+/**
+ * URL thumbnail produk. Pakai placeholder SVG jika tidak ada gambar.
+ */
+function thumbnailUrl(array $product): string
+{
+    if (!empty($product['thumbnail'])) {
+        return app_url('uploads/' . ltrim($product['thumbnail'], '/'));
+    }
+    return app_url('assets/images/placeholder.svg');
 }

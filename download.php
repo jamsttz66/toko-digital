@@ -25,7 +25,25 @@ if ($token === '') {
 }
 
 $service = new DeliveryService();
-$data = $service->validateToken($token);
+
+// Mode 1: token mentah dari email (link download)
+$token = (string) input('token', '');
+
+// Mode 2: delivery_id melalui session (halaman library)
+$deliveryId = (int) input('delivery', 0);
+
+if ($token !== '') {
+    $data = $service->validateToken($token);
+} elseif ($deliveryId > 0) {
+    if (!is_logged_in()) {
+        http_response_code(403);
+        exit('Login diperlukan untuk download');
+    }
+    $data = $service->validateDeliveryForUser($deliveryId, (int) $_SESSION['user']['id']);
+} else {
+    http_response_code(400);
+    exit('Permintaan download tidak valid');
+}
 
 // Kasus invalid
 if (!$data) {
@@ -69,7 +87,17 @@ if (!is_file($filePath) || !is_readable($filePath)) {
 }
 
 // Catat download
-$service->recordDownload((int) $data['token_id'], (int) $data['delivery_id']);
+$tokenId = (int) ($data['token_id'] ?? 0);
+if ($tokenId > 0) {
+    $service->recordDownload($tokenId, (int) $data['delivery_id']);
+} else {
+    Database::execute(
+        "UPDATE deliveries SET last_download_at = datetime('now'),
+            download_count = download_count + 1
+         WHERE id = :did",
+        [':did' => (int) $data['delivery_id']]
+    );
+}
 
 // Stream file tanpa expose physical path
 header('Content-Description: File Transfer');

@@ -64,7 +64,7 @@ class Delivery extends Model
     public function markDelivered(int $deliveryId): void
     {
         Database::execute(
-            "UPDATE deliveries SET status = 'delivery', last_download_at = datetime('now'),
+            "UPDATE deliveries SET status = 'delivered', last_download_at = datetime('now'),
                 download_count = download_count + 1, updated_at = datetime('now')
              WHERE id = :id",
             [':id' => $deliveryId]

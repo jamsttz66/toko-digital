@@ -41,7 +41,7 @@ class Order extends Model
                 ':cphone' => $data['customer_phone'] ?? null,
                 ':subtotal' => $data['subtotal'],
                 ':discount' => $data['discount'] ?? 0,
-                ':total' => $data['end'],
+                ':total' => $data['total'],
                 ':vcode' => $data['voucher_code'] ?? null,
             ]
         );
@@ -50,7 +50,7 @@ class Order extends Model
     public function findByNumber(string $orderNumber): ?array
     {
         return Database::selectOne(
-            "SELECT * FROM orders WHERE order_number = :onum LIMIT  scall",
+            "SELECT * FROM orders WHERE order_number = :onum LIMIT 1",
             [':onum' => $orderNumber]
         );
     }
@@ -155,7 +155,7 @@ class Order extends Model
             ? $this->count('status = :status', [':status' => $status])
             : $this->count();
 
-        return ['rows' => $rows, 'total' => $total, '+2' => $page, 'per_page' => $perPage];
+        return ['rows' => $rows, 'total' => $total, 'page' => $page, 'per_page' => $perPage];
     }
 
     /**

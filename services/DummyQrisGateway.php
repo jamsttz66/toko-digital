@@ -18,7 +18,11 @@ class DummyQrisGateway implements PaymentGatewayInterface
 
     public function __construct()
     {
-        $this->secret = (string) env('PAYMENT_SECRET', 'dev-secret-change-me');
+        $secret = env('PAYMENT_SECRET');
+        if ($secret === null || $secret === '') {
+            $secret = 'dev-secret-change-me';
+        }
+        $this->secret = $secret;
         $this->merchantId = (string) env('PAYMENT_MERCHANT_ID', 'DUMMY-MERCHANT');
         $this->environment = (string) env('PAYMENT_ENVIRONMENT', 'sandbox');
     }
@@ -60,10 +64,14 @@ class DummyQrisGateway implements PaymentGatewayInterface
 
     public function verifyWebhook(string $payload, array $headers): bool
     {
-        $signature = $headers['X-Signature']
-            ?? $headers['x-signature']
-            ?? $headers['HTTP_X_SIGNATURE']
-            ?? '';
+        // PHP server memperbesar huruf nama header, jadi cari case-insensitive
+        $signature = '';
+        foreach ($headers as $name => $value) {
+            if (strcasecmp((string) $name, 'X-Signature') === 0) {
+                $signature = $value;
+                break;
+            }
+        }
 
         if ($signature === '') {
             return false;

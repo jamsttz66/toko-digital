@@ -11,17 +11,6 @@ $featured = $productModel->featured(8);
 $categories = $categoryModel->activeWithCount();
 
 $pageTitle = 'Produk digital pilihan, langsung setelah pembayaran';
-
-/**
- * URL thumbnail produk. Jika tidak ada gamung, pakai placeholder SVG.
- */
-function thumbnailUrl(array $product): string
-{
-    if (!empty($product['thumbnail'])) {
-        return app_url('uploads/' . ltrim($product['thumbnail'], '/'));
-    }
-    return app_url('assets/images/placeholder.svg');
-}
 ?>
 
 <section class="hero">

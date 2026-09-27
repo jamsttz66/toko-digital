@@ -10,6 +10,10 @@
      * Helper: ambil CSRF token dari meta tag atau form.
      */
     function getCsrfToken() {
+        var meta = document.querySelector('meta[name="csrf-token"]');
+        if (meta) {
+            return meta.getAttribute('content');
+        }
         var input = document.querySelector('input[name="csrf_token"]');
         return input ? input.value : '';
     }
