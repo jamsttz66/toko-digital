@@ -116,6 +116,9 @@ class PaymentService
             $txn = $this->gateway->createTransaction([
                 'order_number' => $orderNumber,
                 'total' => $total,
+                'customer_name' => $customer['name'] ?? 'Customer',
+                'customer_email' => $customer['email'] ?? '',
+                'customer_phone' => $customer['phone'] ?? '',
             ]);
 
             $paymentId = (new Payment())->create([

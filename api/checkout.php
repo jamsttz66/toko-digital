@@ -11,6 +11,7 @@ require_once __DIR__ . '/../includes/functions.php';
 require_once __DIR__ . '/../includes/autoload.php';
 require_once __DIR__ . '/../services/PaymentGatewayInterface.php';
 require_once __DIR__ . '/../services/DummyQrisGateway.php';
+require_once __DIR__ . '/../services/MidtransGateway.php';
 require_once __DIR__ . '/../services/PaymentService.php';
 require_once __DIR__ . '/../services/EmailService.php';
 

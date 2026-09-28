@@ -45,15 +45,21 @@ class MidtransGateway implements PaymentGatewayInterface
         $orderId = (string) ($order['order_number'] ?? '');
         $amount = (int) round((float) ($order['total'] ?? 0));
 
+        $email = trim((string) ($order['customer_email'] ?? ''));
+        if ($email === '' || filter_var($email, FILTER_VALIDATE_EMAIL) === false) {
+            throw new RuntimeException('Email customer tidak valid untuk Midtrans');
+        }
+        $phone = preg_replace('/\D+/', '', (string) ($order['customer_phone'] ?? ''));
+
         $body = [
             'transaction_details' => [
                 'order_id' => $orderId,
                 'gross_amount' => $amount,
             ],
             'customer_details' => [
-                'first_name' => (string) ($order['customer_name'] ?? 'Customer'),
-                'email' => (string) ($order['customer_email'] ?? ''),
-                'phone' => (string) ($order['customer_phone'] ?? ''),
+                'first_name' => substr((string) ($order['customer_name'] ?? 'Customer'), 0, 20) ?: 'Customer',
+                'email' => $email,
+                'phone' => $phone !== '' ? $phone : '081234567890',
             ],
             'item_details' => $order['items'] ?? [[
                 'id' => $orderId,
