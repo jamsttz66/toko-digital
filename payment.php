@@ -55,9 +55,7 @@ $orderItems = (new Order())->items((int) $order['id']);
 $isPending = $payment['status'] === 'pending';
 $isPaid = in_array($payment['status'], ['paid'], true) || in_array($order['status'], ['paid', 'completed'], true);
 
-$snapJsUrl = strtolower((string) env('PAYMENT_ENVIRONMENT', 'sandbox')) === 'production'
-    ? 'https://app.midtrans.com/snap/snap.js'
-    : 'https://app.sandbox.midtrans.com/snap/snap.js';
+// Midtrans QRIS (Core API). QR string Midtrans dirender jadi QR code di payment.php.
 
 $pageTitle = 'Pembayaran ' . $order['order_number'];
 ?>
@@ -129,14 +127,38 @@ $pageTitle = 'Pembayaran ' . $order['order_number'];
                 ?>
                 <?php if ($isMidtrans && $snapToken !== ''): ?>
                     <div class="card-product p-5 text-center">
-                        <h1 class="fs-3 mb-2">Selesaikan Pembayaran</h1>
-                        <p class="text-muted">Klik tombol di bawah untuk membuka kode QRIS Midtrans.</p>
+                        <h1 class="fs-3 mb-2">Scan QRIS untuk Bayar</h1>
+                        <p class="text-muted small mb-4">Pindai kode QRIS di bawah dengan e-wallet atau aplikasi mobile banking Anda (GoPay, OVO, DANA, ShopeePay, Bank apa pun).</p>
+                        <div id="qrisBox" class="d-flex justify-content-center mb-3"></div>
+                        <p class="text-muted small mb-4" id="qrisTimer"></p>
                         <div class="divider"></div>
-                        <button id="snapPayBtn" class="btn btn-primary btn-lg w-100 mb-3">
-                            Bayar Sekarang via QRIS
-                        </button>
-                        <div id="snapPayResult" class="small text-muted"></div>
+                        <a href="<?php echo app_url('payment.php?tx=' . urlencode($payment['transaction_id'])); ?>" class="btn btn-outline-ink btn-sm">
+                            Cek status pembayaran
+                        </a>
                         <div class="divider"></div>
+                        <p class="small text-muted mb-0">
+                            Pembayaran dikonfirmasi otomatis setelah Anda scan &amp; bayar. Halaman ini akan memuat ulang sendiri.
+                        </p>
+                    </div>
+                    <script src="<?php echo app_url('assets/js/qrcode.min.js'); ?>"></script>
+                    <script>
+                        (function () {
+                            var box = document.getElementById('qrisBox');
+                            var timerEl = document.getElementById('qrisTimer');
+                            var qrData = <?php echo json_encode($snapToken); ?>;
+                            new QRCode(box, { text: qrData, width: 260, height: 260, correctLevel: QRCode.CorrectLevel.M });
+                            var expiredAt = new Date(<?php echo json_encode(date('c', strtotime($payment['expired_at'] ?? 'now'))); ?>).getTime();
+                            function tick() {
+                                var left = expiredAt - Date.now();
+                                if (left <= 0) { timerEl.textContent = 'Waktu pembayaran habis. Silakan checkout ulang.'; clearInterval(iv); return; }
+                                var m = Math.floor(left / 60000), s = Math.floor((left % 60000) / 1000);
+                                timerEl.textContent = 'Berlaku hingga ' + new Date(expiredAt).toLocaleString('id-ID') + ' (sisa ' + m + ' menit ' + s + ' detik)';
+                            }
+                            tick();
+                            var iv = setInterval(tick, 1000);
+                            setTimeout(function () { window.location.reload(); }, 20000);
+                        })();
+                    </script>
                         <div class="text-start small mb-4">
                             <div class="d-flex justify-content-between mb-2">
                                 <span class="text-muted">Nomor pesanan</span>
@@ -155,41 +177,24 @@ $pageTitle = 'Pembayaran ' . $order['order_number'];
                         </div>
                     </div>
 
-                    <script src="<?php echo e($snapJsUrl); ?>"></script>
                     <script>
                     (function () {
-                        var btn = document.getElementById('snapPayBtn');
-                        var out = document.getElementById('snapPayResult');
-                        btn.addEventListener('click', function () {
-                            if (!window.snap) {
-                                out.textContent = 'Midtrans Snap belum terload. Refresh halaman.';
-                                return;
-                            }
-                            btn.disabled = true;
-                            btn.textContent = 'Membuka pembayaran...';
-                            window.snap.pay(<?php echo json_encode($snapToken); ?>, {
-                                onSuccess: function (r) {
-                                    out.textContent = 'Pembayaran berhasil. Memuat ulang...';
-                                    setTimeout(function () { window.location.reload(); }, 700);
-                                },
-                                onPending: function (r) {
-                                    out.textContent = 'Menunggu pembayaran...';
-                                    btn.disabled = false;
-                                    btn.textContent = 'Bayar Sekarang via Midtrans';
-                                    setTimeout(function () { window.location.reload(); }, 2500);
-                                },
-                                onError: function (r) {
-                                    out.textContent = 'Pembayaran gagal/dibatalkan. Coba lagi.';
-                                    btn.disabled = false;
-                                    btn.textContent = 'Bayar Sekarang via Midtrans';
-                                },
-                                onClose: function () {
-                                    out.textContent = 'Jendela pembayaran ditutup. Selesaikan pembayaran untuk mendapatkan produk.';
-                                    btn.disabled = false;
-                                    btn.textContent = 'Bayar Sekarang via Midtrans';
-                                }
-                            });
-                        });
+                        var box = document.getElementById('qrisBox');
+                        var timerEl = document.getElementById('qrisTimer');
+                        var qrData = <?php echo json_encode($snapToken); ?>;
+                        if (window.QRCode && box) {
+                            new QRCode(box, { text: qrData, width: 260, height: 260, correctLevel: QRCode.CorrectLevel.M });
+                        }
+                        var expiredAt = new Date(<?php echo json_encode(date('c', strtotime((string) ($payment['expired_at'] ?? 'now')))); ?>).getTime();
+                        function tick() {
+                            var left = expiredAt - Date.now();
+                            if (left <= 0) { if (timerEl) timerEl.textContent = 'Waktu pembayaran habis. Silakan checkout ulang.'; clearInterval(iv); return; }
+                            var m = Math.floor(left / 60000), s = Math.floor((left % 60000) / 1000);
+                            if (timerEl) timerEl.textContent = 'Berlaku hingga ' + new Date(expiredAt).toLocaleString('id-ID') + ' (sisa ' + m + ' menit ' + s + ' detik)';
+                        }
+                        tick();
+                        var iv = setInterval(tick, 1000);
+                        setTimeout(function () { window.location.reload(); }, 20000);
                     })();
                     </script>
 
