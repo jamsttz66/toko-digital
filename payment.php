@@ -130,10 +130,10 @@ $pageTitle = 'Pembayaran ' . $order['order_number'];
                 <?php if ($isMidtrans && $snapToken !== ''): ?>
                     <div class="card-product p-5 text-center">
                         <h1 class="fs-3 mb-2">Selesaikan Pembayaran</h1>
-                        <p class="text-muted">Klik tombol di bawah untuk membuka halaman pembayaran Midtrans (kartu, e-wallet, QRIS).</p>
+                        <p class="text-muted">Klik tombol di bawah untuk membuka kode QRIS Midtrans.</p>
                         <div class="divider"></div>
                         <button id="snapPayBtn" class="btn btn-primary btn-lg w-100 mb-3">
-                            Bayar Sekarang via Midtrans
+                            Bayar Sekarang via QRIS
                         </button>
                         <div id="snapPayResult" class="small text-muted"></div>
                         <div class="divider"></div>

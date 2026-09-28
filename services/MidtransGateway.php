@@ -56,6 +56,7 @@ class MidtransGateway implements PaymentGatewayInterface
                 'order_id' => $orderId,
                 'gross_amount' => $amount,
             ],
+            'enabled_payments' => ['qris'],
             'customer_details' => [
                 'first_name' => substr((string) ($order['customer_name'] ?? 'Customer'), 0, 20) ?: 'Customer',
                 'email' => $email,
