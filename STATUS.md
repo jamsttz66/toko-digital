@@ -67,3 +67,66 @@ payment + mail).
 
 ## Cara Lanjut
 Buka chat baru, bilang "lanjutkan toko-digital". Cek `git log` & file ini.
+
+---
+
+## Update 28 Sep 2026 — QRIS Midtrans Core API + UI polish
+
+### Pembayaran: QRIS Midtrans asli (commit 62984a7, cb353c4, 5cacc7e)
+- **Akar masalah "QRIS ngawur"**: `payment.php` selalu gambar QR SVG acak sendiri,
+  abaikan gateway. Selain itu Midtrans Snap `enabled_payments:["qris"]` diabaikan
+  (respons `enabled_payments: []`) → popup kosong.
+- **Solusi**: ganti Snap → **Core API** `POST /v2/charge` dengan `payment_type: qris`.
+  Respons berisi `qr_string` asli (format `000201...`) yang dirender jadi QR code
+  langsung di `payment.php` pakai `qrcode.min.js`.
+- **Detail teknis penting**:
+  - Pakai `CURLOPT_USERPWD` — header `Authorization: Basic <base64>` manual
+    ditolak sandbox Midtrans dengan 401 meski base64-nya benar.
+  - `item_details[].name` maksimal 20 char, `id` maksimal 50 char — Midtrans
+    reject (401) jika lebih panjang.
+  - `phone` dinormalisasi ke format `62...`.
+  - `expired_at` diambil dari `expiry_time` Midtrans (15 menit), bukan +24 jam.
+- **Yang diuji dan lulus**:
+  - Gateway lokal: `transaction_id` + `qr_string` 243 char valid (`000201`).
+  - QR image endpoint Midtrans: `image/png` 1770 byte.
+  - Webhook signature SHA512: VALID, parse status → PAID.
+  - Live checkout end-to-end: order `DS-20260928-000019`, `qr_string` valid.
+  - Live `payment.php`: judul "Scan QRIS untuk Bayar", `qrisBox` render QR,
+    `snap.pay` popup sudah hilang total.
+- **File terkait**: `services/MidtransGateway.php`, `payment.php`,
+  `assets/js/qrcode.min.js` (library QRCode.js via jsdelivr).
+
+### UI/UX polish
+- Font **Plus Jakarta Sans** (rekomendasi ui-ux-pro-max-skill) + preconnect
+  Google Fonts di `includes/header.php`.
+- 8 produk sekarang punya **thumbnail SVG per kategori** (sebelumnya semua
+  placeholder generik). Dibuat dengan skrip, diupload ke live via admin.
+- Admin sekarang menerima thumbnail **SVG** (sebelumnya hanya jpg/png/webp):
+  `product-create.php`, `product-edit.php`, `category-create.php`,
+  `category-edit.php`.
+- 4 produk unggulan featured: Notion, Business Proposal, Social Media,
+  Spreadsheet Financial Planner.
+- Kategori sampah "Kategori Test 1790505415" dihapus dari live DB.
+- QR box di `payment.php` diberi kartu putih + shadow.
+
+### Bug teridentifikasi & dibersihkan
+- Semua 21 halaman (storefront + admin) **tanpa error PHP** (scan Fatal/Parse/
+  Warning/Notice/Uncaught/Deprecated → 0 issue).
+- `admin/index.php` memang tidak ada — dashboard ada di `admin/dashboard.php`.
+- Tidak ada horizontal overflow di desktop (1280px) selain offcanvas navbar
+  mobile (memang sengaja di luar viewport).
+
+### Skill baru terinstall (28 Sep 2026)
+- **agent-skills** (addyosmani, 25 skill) → `~/.hermes/skills/software-development/`
+- **ui-ux-pro-max-skill** (nextlevelbuilder, 7 skill) → `~/.hermes/skills/creative/`
+- Clone: `/root/agent-skills`, `/root/ui-ux-pro-max-skill`
+- Search engine UI Pro Max jalan: `python3 src/ui-ux-pro-max/scripts/search.py
+  "<query>" --domain <product|style|color|typography|...>`
+
+### Catatan
+- Password admin live sudah sama dengan lokal (`admin123`) — di-reset karena
+  login live sempat gagal.
+- Session cPanel sering expired; jika perlu, login ulang ke
+  `https://prediksidbd-rini.my.id:2083/`.
+- Webhook Midtrans di dashboard sandbox masih perlu diset ke
+  `https://prediksidbd-rini.my.id/toko/api/payment-webhook.php`.
