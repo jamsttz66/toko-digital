@@ -12,6 +12,7 @@ require_once __DIR__ . '/../includes/functions.php';
 require_once __DIR__ . '/../includes/autoload.php';
 require_once __DIR__ . '/PaymentGatewayInterface.php';
 require_once __DIR__ . '/DummyQrisGateway.php';
+require_once __DIR__ . '/MidtransGateway.php';
 
 class PaymentService
 {
@@ -22,9 +23,7 @@ class PaymentService
         $provider = strtolower((string) env('PAYMENT_PROVIDER', 'dummy'));
 
         $this->gateway = match ($provider) {
-            'dummy' => new DummyQrisGateway(),
-            // 'midtrans' => new MidtransQrisGateway(),  // fase integrasi production
-            // 'xendit'   => new XenditQrisGateway(),
+            'midtrans' => new MidtransGateway(),
             default => new DummyQrisGateway(),
         };
     }

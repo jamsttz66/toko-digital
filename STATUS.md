@@ -4,13 +4,29 @@
 **Server:** `php -S 127.0.0.1:8080` (PID 41069, jalan dari /root/toko-digital)
 **URL:** http://localhost:8080
 **DB:** SQLite `storage/database.sqlite` (DB_DRIVER=sqlite)
-**Git:** 5 commit, working tree bersih.
+**Git:** working tree akan di-commit setelah Midtrans + fitur admin.
 
 ## Akses Login
 - **Admin:** `admin@tokodigital.test` / `admin123` (role: super_admin)
 - **Customer:** `testuser@example.com` (lihat database/seed.php untuk password)
 
 ## Yang Sudah Jadi (semua diuji render HTTP 200)
+
+### Pembayaran Midtrans Snap (sandbox)
+- Provider `midtrans` di `services/MidtransGateway.php`.
+- Checkout membuat token Snap sungguhan ke `app.sandbox.midtrans.com`.
+- Webhook `api/payment-webhook.php` memverifikasi
+  `SHA512(order_id + status_code + gross_amount + ServerKey)`.
+- Signature palsu ditolak. Settlement membuat order `paid` + delivery.
+- Header webhook dibaca lewat `getallheaders()` (php -S tidak mengisi `HTTP_*`).
+- Key ada di `.env` (`MIDTRANS_SERVER_KEY` / `MIDTRANS_CLIENT_KEY`), tidak di git.
+- Admin settings bisa ganti provider dummy/midtrans dan kedua key.
+
+### Admin tambahan
+- Pagination prev/next: orders, payments, deliveries, users.
+- Kolom tanggal orders: `dd/mm/YYYY HH:mm`.
+- Konfirmasi pembayaran manual di detail order (cadangan jika webhook gagal).
+- Export CSV laporan: `admin/reports-export.php` (filter tanggal yang sama).
 
 ### Customer storefront (commit 8a3e1c9, "E2E tested")
 index, produk, produk-detail, kategori, cart, checkout, payment, profile,
@@ -45,16 +61,9 @@ payment + mail).
 5. Direktori sampah `admin/{partials}` (typo brace dari shell lama) sudah dihapus.
 
 ## Yang Masih Bisa Dikerjakan (opsional)
-- Test E2E alur pembayaran penuh: checkout → webhook → delivery → download.
-  Webhook butuh signature valid; pakai `tools/simulate-webhook.php`.
-  Catatan: webhook pembayaran sebelumnya gagal di log karena "Signature webhook
-  tidak valid".
 - Email service gagal dikirim (log: "Gagal mengirim email") — MAIL_* kosong.
-- Pagination UI untuk orders/payments/deliveries/users (model sudah ada
-  paginateAdmin, tinggal render tombol prev/next).
-- `orders.php` kolom tanggal masih tgl_jam_id, bisa rapikan.
-- Konfirmasi pembayaran manual dari admin (sekarang hanya via webhook).
-- belum ada tombol export CSV/PDF untuk reports.
+- URL notifikasi Midtrans harus publik (bukan localhost) supaya sandbox
+  benar-benar memanggil webhook. Tes lokal sudah lewat payload bertanda tangan.
 
 ## Cara Lanjut
 Buka chat baru, bilang "lanjutkan toko-digital". Cek `git log` & file ini.

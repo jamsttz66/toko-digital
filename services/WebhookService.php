@@ -14,6 +14,7 @@ require_once __DIR__ . '/../includes/functions.php';
 require_once __DIR__ . '/../includes/autoload.php';
 require_once __DIR__ . '/PaymentGatewayInterface.php';
 require_once __DIR__ . '/DummyQrisGateway.php';
+require_once __DIR__ . '/MidtransGateway.php';
 require_once __DIR__ . '/DeliveryService.php';
 
 class WebhookService
@@ -24,6 +25,7 @@ class WebhookService
     {
         $provider = strtolower((string) env('PAYMENT_PROVIDER', 'dummy'));
         $this->gateway = match ($provider) {
+            'midtrans' => new MidtransGateway(),
             default => new DummyQrisGateway(),
         };
     }

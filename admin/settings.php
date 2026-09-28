@@ -27,6 +27,8 @@ if (is_post()) {
             'PAYMENT_ENVIRONMENT' => clean(input('PAYMENT_ENVIRONMENT', 'sandbox')),
             'PAYMENT_API_KEY'     => clean(input('PAYMENT_API_KEY', '')),
             'PAYMENT_MERCHANT_ID' => clean(input('PAYMENT_MERCHANT_ID', '')),
+            'MIDTRANS_SERVER_KEY' => clean(input('MIDTRANS_SERVER_KEY', '')),
+            'MIDTRANS_CLIENT_KEY' => clean(input('MIDTRANS_CLIENT_KEY', '')),
             'MAIL_HOST'           => clean(input('MAIL_HOST', '')),
             'MAIL_USERNAME'       => clean(input('MAIL_USERNAME', '')),
             'MAIL_PASSWORD'       => (string) input('MAIL_PASSWORD', ''),
@@ -75,6 +77,8 @@ $settings = [
     'PAYMENT_ENVIRONMENT' => 'sandbox',
     'PAYMENT_API_KEY' => '',
     'PAYMENT_MERCHANT_ID' => '',
+    'MIDTRANS_SERVER_KEY' => '',
+    'MIDTRANS_CLIENT_KEY' => '',
     'MAIL_HOST' => '',
     'MAIL_USERNAME' => '',
     'MAIL_PASSWORD' => '',
@@ -120,6 +124,7 @@ require_once __DIR__ . '/partials/header.php';
                 <label class="form-label" for="PAYMENT_PROVIDER">Provider</label>
                 <select class="form-select" id="PAYMENT_PROVIDER" name="PAYMENT_PROVIDER">
                     <option value="dummy" <?php echo $settings['PAYMENT_PROVIDER'] === 'dummy' ? 'selected' : ''; ?>>Dummy (Sandbox Lokal)</option>
+                    <option value="midtrans" <?php echo $settings['PAYMENT_PROVIDER'] === 'midtrans' ? 'selected' : ''; ?>>Midtrans Snap</option>
                 </select>
             </div>
             <div class="col-md-4">
@@ -140,9 +145,14 @@ require_once __DIR__ . '/partials/header.php';
                        value="<?php echo e($settings['PAYMENT_API_KEY']); ?>">
             </div>
             <div class="col-md-6">
-                <label class="form-label" for="PAYMENT_MERCHANT_ID">Merchant ID</label>
-                <input type="text" class="form-control" id="PAYMENT_MERCHANT_ID" name="PAYMENT_MERCHANT_ID"
-                       value="<?php echo e($settings['PAYMENT_MERCHANT_ID']); ?>">
+                <label class="form-label" for="MIDTRANS_SERVER_KEY">Midtrans Server Key</label>
+                <input type="password" class="form-control" id="MIDTRANS_SERVER_KEY" name="MIDTRANS_SERVER_KEY"
+                       value="<?php echo e($settings['MIDTRANS_SERVER_KEY']); ?>" autocomplete="off">
+            </div>
+            <div class="col-md-6">
+                <label class="form-label" for="MIDTRANS_CLIENT_KEY">Midtrans Client Key</label>
+                <input type="text" class="form-control" id="MIDTRANS_CLIENT_KEY" name="MIDTRANS_CLIENT_KEY"
+                       value="<?php echo e($settings['MIDTRANS_CLIENT_KEY']); ?>">
             </div>
         </div>
 

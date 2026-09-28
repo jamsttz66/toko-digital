@@ -177,6 +177,20 @@ require_once __DIR__ . '/partials/header.php';
                 <a href="<?php echo app_url('admin/payments.php'); ?>" class="btn btn-outline-ink btn-sm mt-2">
                     Lihat Semua Pembayaran
                 </a>
+                <?php if (!in_array($order['status'], ['paid', 'completed', 'refunded', 'cancelled'], true)
+                          && $payment['status'] !== 'paid'): ?>
+                    <form method="post" action="<?php echo app_url('admin/payment-confirm.php'); ?>" class="mt-3">
+                        <?php echo csrf_field(); ?>
+                        <input type="hidden" name="id" value="<?php echo (int) $order['id']; ?>">
+                        <button type="submit" class="btn btn-primary btn-sm w-100"
+                                onclick="return confirm('Konfirmasi pembayaran ini secara manual? File digital akan langsung dibuat.')">
+                            Konfirmasi Pembayaran Manual
+                        </button>
+                        <p class="text-muted small mt-2 mb-0">
+                            Untuk pembayaran di luar webhook (transfer dicek manual).
+                        </p>
+                    </form>
+                <?php endif; ?>
             <?php endif; ?>
         </div>
     </div>

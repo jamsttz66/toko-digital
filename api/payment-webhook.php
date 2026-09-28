@@ -17,6 +17,7 @@ require_once __DIR__ . '/../includes/functions.php';
 require_once __DIR__ . '/../includes/autoload.php';
 require_once __DIR__ . '/../services/PaymentGatewayInterface.php';
 require_once __DIR__ . '/../services/DummyQrisGateway.php';
+require_once __DIR__ . '/../services/MidtransGateway.php';
 require_once __DIR__ . '/../services/DeliveryService.php';
 require_once __DIR__ . '/../services/EmailService.php';
 require_once __DIR__ . '/../services/WebhookService.php';
@@ -33,6 +34,14 @@ foreach ($_SERVER as $k => $v) {
     if (str_starts_with($k, 'HTTP_')) {
         $name = str_replace('_', '-', substr($k, 5));
         $headers[$name] = $v;
+    }
+}
+
+// php -S (dan sebagian SAPI lain) tidak memasukkan header custom ke $_SERVER['HTTP_*'].
+// getallheaders() adalah sumber yang benar; $_SERVER tetap jadi fallback.
+if (function_exists('getallheaders')) {
+    foreach (getallheaders() as $name => $value) {
+        $headers[$name] = $value;
     }
 }
 

@@ -70,7 +70,7 @@ $statusLabels = [
                                     <?php echo e($statusLabels[$o['status']][0] ?? $o['status']); ?>
                                 </span>
                             </td>
-                            <td class="small text-muted"><?php echo tgl_jam_id($o['created_at']); ?></td>
+                            <td class="small text-muted text-nowrap"><?php echo e(date('d/m/Y H:i', strtotime($o['created_at']))); ?></td>
                             <td class="text-nowrap">
                                 <a href="<?php echo app_url('admin/order-detail.php?id=' . (int) $o['id']); ?>"
                                    class="btn btn-outline-ink btn-sm">Detail</a>
@@ -81,6 +81,7 @@ $statusLabels = [
             </table>
         </div>
     <?php endif; ?>
+    <?php echo pagination_nav($result, 'admin/orders.php', $status !== '' ? ['status' => $status] : []); ?>
 </div>
 
 <?php require_once __DIR__ . '/partials/footer.php'; ?>

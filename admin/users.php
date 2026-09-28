@@ -88,6 +88,7 @@ unset($_SESSION['flash']);
             </table>
         </div>
     <?php endif; ?>
+    <?php echo pagination_nav($result, 'admin/users.php'); ?>
 </div>
 
 <?php require_once __DIR__ . '/partials/footer.php'; ?>

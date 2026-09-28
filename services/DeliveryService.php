@@ -75,7 +75,7 @@ class DeliveryService
              VALUES (:did, :uid, :thash, :exp, 5, 0, datetime('now'))",
             [
                 ':did' => $deliveryId,
-                ':uid' => $_SESSION['user']['id'] ?? null,
+                ':uid' => $order['user_id'] ?? null,
                 ':thash' => $tokenHash,
                 ':exp' => $expiresAt,
             ]

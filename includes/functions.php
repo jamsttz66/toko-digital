@@ -102,6 +102,43 @@ function csrf_field(): string
 }
 
 /**
+ * Tombol prev/next untuk hasil paginate model (rows, total, page, per_page).
+ * $query adalah query string yang dipertahankan (filter status, tanggal, dll).
+ */
+function pagination_nav(array $result, string $basePath, array $query = []): string
+{
+    $page = max(1, (int) ($result['page'] ?? 1));
+    $perPage = max(1, (int) ($result['per_page'] ?? 20));
+    $total = (int) ($result['total'] ?? 0);
+    $pages = max(1, (int) ceil($total / $perPage));
+
+    if ($pages <= 1) {
+        return '';
+    }
+
+    $link = static function (int $p) use ($basePath, $query): string {
+        $query['page'] = $p;
+        return app_url($basePath . '?' . http_build_query($query));
+    };
+
+    $html = '<nav class="d-flex justify-content-between align-items-center mt-3">';
+    if ($page > 1) {
+        $html .= '<a class="btn btn-outline-ink btn-sm" href="' . e($link($page - 1)) . '">← Sebelumnya</a>';
+    } else {
+        $html .= '<span class="btn btn-outline-ink btn-sm disabled">← Sebelumnya</span>';
+    }
+    $html .= '<span class="small text-muted">Halaman ' . $page . ' dari ' . $pages . '</span>';
+    if ($page < $pages) {
+        $html .= '<a class="btn btn-outline-ink btn-sm" href="' . e($link($page + 1)) . '">Berikutnya →</a>';
+    } else {
+        $html .= '<span class="btn btn-outline-ink btn-sm disabled">Berikutnya →</span>';
+    }
+    $html .= '</nav>';
+
+    return $html;
+}
+
+/**
  * Redirect aman.
  */
 function redirect(string $path): void

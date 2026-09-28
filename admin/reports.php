@@ -85,8 +85,11 @@ require_once __DIR__ . '/partials/header.php';
             <label class="form-label small" for="to">Sampai Tanggal</label>
             <input type="date" class="form-control" id="to" name="to" value="<?php echo e($to); ?>">
         </div>
-        <div class="col-md-3">
+        <div class="col-md-3 d-flex gap-2">
             <button type="submit" class="btn btn-primary">Filter</button>
+            <a class="btn btn-outline-ink" href="<?php echo app_url('admin/reports-export.php?from=' . urlencode($from) . '&to=' . urlencode($to)); ?>">
+                Export CSV
+            </a>
         </div>
     </div>
 </form>
