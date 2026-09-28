@@ -129,7 +129,7 @@ $pageTitle = 'Pembayaran ' . $order['order_number'];
                     <div class="card-product p-5 text-center">
                         <h1 class="fs-3 mb-2">Scan QRIS untuk Bayar</h1>
                         <p class="text-muted small mb-4">Pindai kode QRIS di bawah dengan e-wallet atau aplikasi mobile banking Anda (GoPay, OVO, DANA, ShopeePay, Bank apa pun).</p>
-                        <div id="qrisBox" class="d-flex justify-content-center mb-3"></div>
+                        <div id="qrisBox" class="d-flex justify-content-center mb-3 p-4 rounded-3" style="background:#fff;border:1px solid var(--color-line);box-shadow:var(--shadow-sm)"></div>
                         <p class="text-muted small mb-4" id="qrisTimer"></p>
                         <div class="divider"></div>
                         <a href="<?php echo app_url('payment.php?tx=' . urlencode($payment['transaction_id'])); ?>" class="btn btn-outline-ink btn-sm">
