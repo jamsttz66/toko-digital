@@ -55,7 +55,7 @@ if (is_post()) {
         $data['thumbnail'] = $product['thumbnail'];
         if (!empty($_FILES['thumbnail']['name']) && $_FILES['thumbnail']['error'] === UPLOAD_ERR_OK) {
             $ext = strtolower(pathinfo($_FILES['thumbnail']['name'], PATHINFO_EXTENSION));
-            if (in_array($ext, ['jpg', 'jpeg', 'png', 'webp'], true)) {
+            if (in_array($ext, ['jpg', 'jpeg', 'png', 'webp', 'svg'], true)) {
                 $storedName = bin2hex(random_bytes(10)) . '.' . $ext;
                 $dir = dirname(__DIR__) . '/uploads';
                 if (!is_dir($dir)) {

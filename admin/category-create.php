@@ -34,8 +34,8 @@ if (is_post()) {
         // Upload gambar kategori (opsional)
         if (!empty($_FILES['image']['name']) && $_FILES['image']['error'] === UPLOAD_ERR_OK) {
             $ext = strtolower(pathinfo($_FILES['image']['name'], PATHINFO_EXTENSION));
-            if (!in_array($ext, ['jpg', 'jpeg', 'png', 'webp'], true)) {
-                $errors[] = 'Gambar harus JPG/PNG/WEBP';
+            if (!in_array($ext, ['jpg', 'jpeg', 'png', 'webp', 'svg'], true)) {
+                $errors[] = 'Gambar harus JPG/PNG/WEBP/SVG';
             } else {
                 $storedName = 'cat-' . bin2hex(random_bytes(10)) . '.' . $ext;
                 $dir = dirname(__DIR__) . '/uploads';

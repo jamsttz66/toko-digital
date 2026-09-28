@@ -48,8 +48,8 @@ if (is_post()) {
         $thumbnail = null;
         if (!empty($_FILES['thumbnail']['name']) && $_FILES['thumbnail']['error'] === UPLOAD_ERR_OK) {
             $ext = strtolower(pathinfo($_FILES['thumbnail']['name'], PATHINFO_EXTENSION));
-            if (!in_array($ext, ['jpg', 'jpeg', 'png', 'webp'], true)) {
-                $errors[] = 'Thumbnail harus JPG/PNG/WEBP';
+            if (!in_array($ext, ['jpg', 'jpeg', 'png', 'webp', 'svg'], true)) {
+                $errors[] = 'Thumbnail harus JPG/PNG/WEBP/SVG';
             } else {
                 $storedName = bin2hex(random_bytes(10)) . '.' . $ext;
                 $dir = dirname(__DIR__) . '/uploads';
