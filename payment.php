@@ -132,7 +132,7 @@ $pageTitle = 'Pembayaran ' . $order['order_number'];
                         <div id="qrisBox" class="d-flex justify-content-center mb-3 p-4 rounded-3" style="background:#fff;border:1px solid var(--color-line);box-shadow:var(--shadow-sm)"></div>
                         <p class="text-muted small mb-4" id="qrisTimer"></p>
                         <div class="divider"></div>
-                        <a href="<?php echo app_url('payment.php?tx=' . urlencode($payment['transaction_id'])); ?>" class="btn btn-outline-ink btn-sm">
+                        <a href="<?php echo app_url('payment.php?tx=' . urlencode($payment['provider_transaction_id'] ?? '')); ?>" class="btn btn-outline-ink btn-sm">
                             Cek status pembayaran
                         </a>
                         <div class="divider"></div>
@@ -146,13 +146,23 @@ $pageTitle = 'Pembayaran ' . $order['order_number'];
                             var box = document.getElementById('qrisBox');
                             var timerEl = document.getElementById('qrisTimer');
                             var qrData = <?php echo json_encode($snapToken); ?>;
-                            new QRCode(box, { text: qrData, width: 260, height: 260, correctLevel: QRCode.CorrectLevel.M });
-                            var expiredAt = new Date(<?php echo json_encode(date('c', strtotime($payment['expired_at'] ?? 'now'))); ?>).getTime();
+                            var qrRendered = false;
+                            function renderQR() {
+                                if (qrRendered || !window.QRCode || !box) return;
+                                qrRendered = true;
+                                new QRCode(box, { text: qrData, width: 260, height: 260, correctLevel: QRCode.CorrectLevel.M });
+                            }
+                            renderQR();
+                            if (!qrRendered) {
+                                document.addEventListener('DOMContentLoaded', renderQR);
+                                setTimeout(renderQR, 300);
+                            }
+                            var expiredAt = new Date(<?php echo json_encode(date('c', strtotime((string) ($payment['expired_at'] ?? 'now')))); ?>).getTime();
                             function tick() {
                                 var left = expiredAt - Date.now();
-                                if (left <= 0) { timerEl.textContent = 'Waktu pembayaran habis. Silakan checkout ulang.'; clearInterval(iv); return; }
+                                if (left <= 0) { if (timerEl) timerEl.textContent = 'Waktu pembayaran habis. Silakan checkout ulang.'; clearInterval(iv); return; }
                                 var m = Math.floor(left / 60000), s = Math.floor((left % 60000) / 1000);
-                                timerEl.textContent = 'Berlaku hingga ' + new Date(expiredAt).toLocaleString('id-ID') + ' (sisa ' + m + ' menit ' + s + ' detik)';
+                                if (timerEl) timerEl.textContent = 'Berlaku hingga ' + new Date(expiredAt).toLocaleString('id-ID') + ' (sisa ' + m + ' menit ' + s + ' detik)';
                             }
                             tick();
                             var iv = setInterval(tick, 1000);
@@ -176,27 +186,6 @@ $pageTitle = 'Pembayaran ' . $order['order_number'];
                             <a href="<?php echo app_url('orders.php'); ?>" class="btn btn-outline-ink">Kembali ke Pesanan</a>
                         </div>
                     </div>
-
-                    <script>
-                    (function () {
-                        var box = document.getElementById('qrisBox');
-                        var timerEl = document.getElementById('qrisTimer');
-                        var qrData = <?php echo json_encode($snapToken); ?>;
-                        if (window.QRCode && box) {
-                            new QRCode(box, { text: qrData, width: 260, height: 260, correctLevel: QRCode.CorrectLevel.M });
-                        }
-                        var expiredAt = new Date(<?php echo json_encode(date('c', strtotime((string) ($payment['expired_at'] ?? 'now')))); ?>).getTime();
-                        function tick() {
-                            var left = expiredAt - Date.now();
-                            if (left <= 0) { if (timerEl) timerEl.textContent = 'Waktu pembayaran habis. Silakan checkout ulang.'; clearInterval(iv); return; }
-                            var m = Math.floor(left / 60000), s = Math.floor((left % 60000) / 1000);
-                            if (timerEl) timerEl.textContent = 'Berlaku hingga ' + new Date(expiredAt).toLocaleString('id-ID') + ' (sisa ' + m + ' menit ' + s + ' detik)';
-                        }
-                        tick();
-                        var iv = setInterval(tick, 1000);
-                        setTimeout(function () { window.location.reload(); }, 20000);
-                    })();
-                    </script>
 
                 <?php else: ?>
                     <div class="card-product p-5 text-center">
