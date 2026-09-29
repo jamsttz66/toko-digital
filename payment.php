@@ -150,7 +150,40 @@ $pageTitle = 'Pembayaran ' . $order['order_number'];
                             function renderQR() {
                                 if (qrRendered || !window.QRCode || !box) return;
                                 qrRendered = true;
+                                box.innerHTML = '';
                                 new QRCode(box, { text: qrData, width: 260, height: 260, correctLevel: QRCode.CorrectLevel.M });
+                                var cv = box.querySelector('canvas');
+                                if (!cv) return;
+                                cv.style.display = 'block';
+                                cv.style.margin = '0 auto';
+
+                                var btn = document.createElement('button');
+                                btn.type = 'button';
+                                btn.className = 'btn btn-outline-ink btn-sm mt-3';
+                                btn.textContent = 'Buka QR di tab baru';
+                                btn.onclick = function () {
+                                    var url = cv.toDataURL('image/png');
+                                    var w = window.open('', '_blank');
+                                    if (!w) return;
+                                    w.document.write(
+                                        '<!DOCTYPE html><html lang="id"><head><meta charset="utf-8">' +
+                                        '<meta name="viewport" content="width=device-width, initial-scale=1">' +
+                                        '<title>Scan QRIS untuk Bayar</title>' +
+                                        '<style>html,body{margin:0;background:#0b0e13;color:#f2f4f8;font-family:system-ui,sans-serif}' +
+                                        '.wrap{min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;padding:24px;text-align:center}' +
+                                        '.card{background:#fff;border-radius:14px;padding:18px;box-shadow:0 10px 40px rgba(99,102,241,.28)}' +
+                                        '.card img{display:block;max-width:min(72vw,420px);width:100%;height:auto}' +
+                                        'h1{font-size:1.35rem;margin:0}.muted{color:#8b93a7;font-size:.9rem;margin:0}.tot{font-size:1.1rem;font-weight:700;color:#8b7cf6;margin:0}' +
+                                        '</style></head><body><div class="wrap">' +
+                                        '<h1>Scan QRIS untuk Bayar</h1>' +
+                                        '<p class="muted">Pindai dengan e-wallet atau mobile banking Anda</p>' +
+                                        '<div class="card"><img src="' + url + '" alt="Kode QRIS"></div>' +
+                                        '<p class="tot">' + <?php echo json_encode(rupiah($order['total'])); ?> + '</p>' +
+                                        '<p class="muted">Pesanan: ' + <?php echo json_encode(e($order['order_number'])); ?> + '</p>' +
+                                        '</div></body></html>');
+                                    w.document.close();
+                                };
+                                box.appendChild(btn);
                             }
                             renderQR();
                             if (!qrRendered) {
