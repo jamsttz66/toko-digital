@@ -123,6 +123,25 @@ Buka chat baru, bilang "lanjutkan toko-digital". Cek `git log` & file ini.
 - Search engine UI Pro Max jalan: `python3 src/ui-ux-pro-max/scripts/search.py
   "<query>" --domain <product|style|color|typography|...>`
 
+### Dark theme LIVE (29 Sep 2026, commit 33114a1)
+- **Live sekarang gelap** (sebelumnya masih tema terang padahal GitHub sdh dark).
+- **Penyebab utama**: Cloudflare cache 4 jam (`max-age=14400`) masih pegang
+  `assets/css/app.css` versi terang; upload ulang tidak menggusur cache edge.
+- **Solusi**: CSS di-rename ke **`assets/css/app-dark.css`** (URL baru = cache miss)
+  dan dipakai di `includes/header.php`, `admin/partials/header.php`,
+  `admin/login.php`. File `app.css` lama dibiarkan (masih di-cache, tidak dipakai).
+- **Fix visual dark theme**:
+  - `.qris-mock` background gelap; SVG QR tetap putih (standar QRIS scan).
+  - `.table th/td` transparent (Bootstrap `.table` default putih).
+- **Audit light-bg** (elemen dgn luminance > 200): homepage & produk 0;
+  admin dashboard & orders 0.
+- **Deploy ke live via cPanel API** (`Fileman/uploadfiles` + `fileop`):
+  POST multipart ke `/json-api/cpanel`, session `/tmp/cp.jar` + security token
+  `/cpsess4421383966`. Git Version Control cPanel **tidak tersedia**
+  (`Cpanel::API::Git.pm` tidak ada) jadi deploy = upload file manual.
+- **Login admin live OK** (admin@tokodigital.test / admin123, 302 → dashboard).
+  Testing: curl POST dgn `--data @file` (password di file, hindari shell redaction).
+
 ### Catatan
 - Password admin live sudah sama dengan lokal (`admin123`) — di-reset karena
   login live sempat gagal.
